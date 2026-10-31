@@ -1,0 +1,41 @@
+/* Опора v17 — «живой» слой поверх styles.css */
+:root{--dp-a:#e3efd9;--dp-b:#e6eef3}
+html[data-daypart=morning]{--dp-a:#fbe8c6;--dp-b:#dcebd0}
+html[data-daypart=day]{--dp-a:#e3efd9;--dp-b:#e6eef3}
+html[data-daypart=evening]{--dp-a:#f4d9c8;--dp-b:#e2dcec}
+html[data-daypart=night]{--dp-a:#dfe3f1;--dp-b:#e4ecec}
+html[data-theme=dark][data-daypart=morning]{--dp-a:#6b5330;--dp-b:#2f5a3c}
+html[data-theme=dark][data-daypart=day]{--dp-a:#2f5a3c;--dp-b:#2c4c63}
+html[data-theme=dark][data-daypart=evening]{--dp-a:#6a3f35;--dp-b:#40386a}
+html[data-theme=dark][data-daypart=night]{--dp-a:#3b4a7a;--dp-b:#1f5a52}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.6;transition:opacity .6s;
+ background:radial-gradient(60% 38% at 90% 0%,var(--dp-a),transparent 70%),radial-gradient(55% 40% at 0% 100%,var(--dp-b),transparent 70%)}
+html[data-theme=dark] body::before{opacity:.22}
+
+/* Сегодня: сначала фокус и задачи, игровая карточка — в конец дня */
+.day-main{display:flex;flex-direction:column}
+.day-main>.day-start-entry{order:-3}.day-main>.focus-card{order:-2}
+.day-main>.review-card{order:8}.day-main>.hero-card{order:9;margin-top:30px}
+
+/* Плавное появление при смене раздела */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.03);box-shadow:0 0 0 6px #8caa7055}100%{transform:scale(1);box-shadow:0 0 0 0 #8caa7000}}
+.content.enter>:not(.day-grid),.content.enter .day-main>*,.content.enter .day-aside>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*45ms)}
+.task-row.just-done{animation:pop .6s ease-out}
+
+/* Отклик на нажатие и наведение */
+.task-check,.btn,.nav-item,.week-day,.icon-button{transition:transform .15s,background-color .2s,box-shadow .2s,border-color .2s,color .2s}
+.task-check:active,.btn:active,.week-day:active,.icon-button:active{transform:scale(.92)}
+.goal-card,.idea-card,.hero-card,.focus-card,.card{transition:box-shadow .25s,transform .25s}
+@media(hover:hover){.goal-card:hover,.idea-card:hover{transform:translateY(-2px);box-shadow:0 12px 32px #2a3b2514}}
+
+/* Мелкие исправления */
+.task-text small{flex-wrap:nowrap;align-items:flex-start}
+.task-text small>.icon{flex-shrink:0;margin-top:.3em}
+.task-text small>span{min-width:0;overflow-wrap:anywhere}
+@media(hover:none){.escape-hint{display:none}}
+@media(max-width:650px){
+ .nav-item[data-page=strategy]>span{font-size:0}.nav-item[data-page=strategy]>span:after{content:'Цели';font-size:14px}
+ body:has(.nav-item.active[data-page=day]) .page-heading p{display:none}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
